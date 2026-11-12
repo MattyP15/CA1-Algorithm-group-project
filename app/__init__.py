@@ -1,8 +1,11 @@
+from pathlib import Path
+
 import get_geo_data
 import osmnx
 import networkx
 
-exe_cathedral_graph = get_geo_data.load_data('data\maps\exeter_cathedral_proper.graphml')
+graph_path = Path("data") / "maps" / "exeter_cathedral_proper.graphml"
+exe_cathedral_graph = get_geo_data.load_data(graph_path)
 
 
 print("Nodes:", len(exe_cathedral_graph.nodes))

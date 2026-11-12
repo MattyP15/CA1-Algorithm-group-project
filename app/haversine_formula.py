@@ -1,4 +1,4 @@
-import osmnx as ox
+import osmnx
 
 def haversine_heuristic(graph, current_node, dest_node):
 
@@ -11,7 +11,7 @@ def haversine_heuristic(graph, current_node, dest_node):
     dest_lon = graph.nodes[dest_node]["x"]
 
     
-    distance = ox.distance.great_circle(
+    distance = osmnx.distance.great_circle(
         current_lat,
         current_lon,
         dest_lat,

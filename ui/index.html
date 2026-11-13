@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Exeter Route Planner</title>
+  <!-- Leaflet is bundled in ui/lib so the app works fully offline -->
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="lib/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <aside id="sidebar">
+    <header>
+      <h1>Exeter Route Planner</h1>
+      <p class="subtitle">A* pathfinding on OpenStreetMap data</p>
+    </header>
+
+    <section class="panel">
+      <h2>Route</h2>
+      <p class="hint" id="hint">Click the map to set the <b>start</b>.</p>
+
+      <div class="point">
+        <span class="dot start"></span>
+        <span class="label">Start</span>
+        <span class="value" id="start-value">not set</span>
+      </div>
+      <div class="point">
+        <span class="dot end"></span>
+        <span class="label">End</span>
+        <span class="value" id="end-value">not set</span>
+      </div>
+
+      <button id="reset-btn" type="button">Reset</button>
+    </section>
+
+    <section class="panel">
+      <h2>Map</h2>
+      <p class="stat"><span>Junctions</span><span id="node-count">–</span></p>
+      <p class="stat"><span>Streets</span><span id="edge-count">–</span></p>
+    </section>
+  </aside>
+
+  <main id="map"></main>
+
+  <!-- Shown until the map has loaded -->
+  <div id="loading">
+    <div class="spinner"></div>
+    <p>Loading Exeter map…</p>
+  </div>
+
+  <!-- Order matters: Leaflet first, then our code that uses it -->
+  <script src="lib/leaflet.js"></script>
+  <script src="js/map.js"></script>
+</body>
+</html>

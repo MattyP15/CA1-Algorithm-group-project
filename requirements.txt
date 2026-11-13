@@ -1,0 +1,5 @@
+osmnx>=2.0
+matplotlib
+pywebview>=5.0
+pyinstaller
+pytest

@@ -28,6 +28,7 @@ map.attributionControl.addAttribution(
 // Markers for the two chosen points (created when first needed).
 let startMarker = null;
 let endMarker = null;
+let solutionPath = null;
 
 // ---------- Draw the road network ----------
 function drawRoads(graph) {
@@ -42,6 +43,14 @@ function drawRoads(graph) {
   }).addTo(map);
 
   map.fitBounds(graph.bounds, { padding: [20, 20] });
+}
+
+function drawSolution(coords) {
+    if (solutionPath) map.removeLayer(solutionPath);
+
+    solutionPath = L.polyline(coords, { color: "#4da3ff", weight: 5 }).addTo(map);
+
+
 }
 
 
@@ -78,11 +87,28 @@ async function handleMapClick(event) {
 }
 
 function resetPoints() {
+  if (solutionPath) map.removeLayer(solutionPath);
+  solutionPath = null;
+  
   if (startMarker) map.removeLayer(startMarker);
   if (endMarker) map.removeLayer(endMarker);
   startMarker = endMarker = null;
   state.startId = state.endId = null;
   updateSidebar();
+}
+
+async function startRun() {
+  if (state.startId === null || state.endId === null) {
+      document.getElementById("hint").innerHTML = "Set both a <b>start</b> and an <b>end</b> first.";
+      return;
+    }
+
+  const coords = await window.pywebview.api.find_path(state.startId, state.endId);
+  if (coords === null) {
+      document.getElementById("hint").textContent = "No route found.";
+      return;
+    }
+  drawSolution(coords);
 }
 
 // ---------- Sidebar text ----------
@@ -114,6 +140,8 @@ async function init() {
 
   map.on("click", handleMapClick);
   document.getElementById("reset-btn").addEventListener("click", resetPoints);
+
+  document.getElementById("start-btn").addEventListener("click", startRun);
 
   document.getElementById("loading").classList.add("hidden");
 }

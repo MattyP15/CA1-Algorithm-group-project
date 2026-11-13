@@ -5,6 +5,7 @@ import threading
 from pathlib import Path
 
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(ROOT / "app"))
 
 def _load_module(relative_path):
     path = ROOT / relative_path
@@ -15,6 +16,7 @@ def _load_module(relative_path):
 
 get_geo_data = _load_module("app/get_geo_data.py")
 haversine_formula = _load_module("app/haversine_formula.py")  # for the search later
+a_star = _load_module("app/a_star.py")
 
 MAP_FILE = ROOT / "data" / "maps" / "exeter.graphml"
 
@@ -106,8 +108,12 @@ class Api:
 
         return best_id
 
+    def find_path(self, start_node, end_node):
+        graph = self._get_loaded_graph()
+        search = a_star.AStar(graph, start_node, end_node)
 
-
+        path, distance = search.run()
+        return [self._latlon(graph.nodes[n]["x"], graph.nodes[n]["y"]) for n in path]
 
 
 

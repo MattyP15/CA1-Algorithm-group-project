@@ -34,6 +34,16 @@
       <button id="reset-btn" type="button">Reset</button>
     </section>
 
+        <section class="panel">
+      <h2>Bookmarks</h2>
+      <div class="bookmark-save">
+        <input id="bookmark-name" type="text" maxlength="60" placeholder="Name this route">
+        <button id="bookmark-btn" type="button">Save</button>
+      </div>
+      <ul id="bookmark-list"></ul>
+      <p class="empty" id="bookmark-empty">No saved routes yet.</p>
+    </section>
+
     <section class="panel">
       <h2>Map</h2>
       <p class="stat"><span>Junctions</span><span id="node-count">–</span></p>
@@ -52,5 +62,6 @@
   <!-- Order matters: Leaflet first, then our code that uses it -->
   <script src="lib/leaflet.js"></script>
   <script src="js/map.js"></script>
+    <script src="js/bookmarks.js"></script>
 </body>
 </html>

@@ -1,7 +1,10 @@
 import importlib.util
+import json
+import os
 import math
 import sys
 import threading
+import time
 from pathlib import Path
 
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent))
@@ -22,11 +25,35 @@ MAP_FILE = ROOT / "data" / "maps" / "exeter.graphml"
 
 COORD_DECIMALS = 5
 
+ROAD_CLASSES = {
+    "major": {"motorway", "motorway_link", "trunk", "trunk_link",
+              "primary", "primary_link", "secondary", "secondary_link"},
+    "medium": {"tertiary", "tertiary_link", "unclassified",
+               "residential", "living_street"},
+    "path": {"footway", "path", "steps", "pedestrian", "cycleway",
+             "bridleway", "corridor"},
+
+}
+CLASS_RANK = {"major": 3, "medium": 2, "minor": 1, "path": 0}
+
+def _bookmarks_file():
+    """Bookmarks are stored in the OS-specific app data folder, not in the project files."""
+    if sys.platform == "win32":          # Windows
+        base = Path(os.environ.get("APPDATA", Path.home()))
+    elif sys.platform == "darwin":       # macOS
+        base = Path.home() / "Library" / "Application Support"
+    else:                                # Linux and others
+        base = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local" / "share"))
+
+    folder = base / "ExeterRoutePlanner"
+    folder.mkdir(parents=True, exist_ok=True)
+    return folder / "bookmarks.json"
 
 class Api:
     def __init__(self):
         self._graph = None              # the osmnx graph, loaded on first use
         self._lock = threading.Lock()   # pywebview runs each JS call in its own thread
+        self._bookmark_lock = threading.Lock()   # stops two saves overwriting each other
 
     def _get_loaded_graph(self):
         with self._lock:
@@ -115,5 +142,48 @@ class Api:
         path, distance = search.run()
         return [self._latlon(graph.nodes[n]["x"], graph.nodes[n]["y"]) for n in path]
 
+# Bookmarks
+    
 
+    def _read_bookmarks(self):
+        path = _bookmarks_file()
+        if not path.exists():
+            return []
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            return []          # a damaged file shouldn't crash the app
+
+    def _write_bookmarks(self, bookmarks):
+        _bookmarks_file().write_text(json.dumps(bookmarks, indent=2), encoding="utf-8")
+
+    def list_bookmarks(self):
+        """Return all saved routes, newest first."""
+        with self._bookmark_lock:
+            return self._read_bookmarks()
+
+    def save_bookmark(self, name, start_node, end_node, map_name="", stats=None):
+        """Save a route and return the updated list (newest first)."""
+        stats = stats or {}
+        with self._bookmark_lock:
+            bookmarks = self._read_bookmarks()
+            bookmarks.insert(0, {
+                "id": str(time.time_ns()),
+                "name": str(name).strip()[:60] or "Untitled route",
+                "start": int(start_node),
+                "end": int(end_node),
+                "map": str(map_name),
+                "cost": stats.get("cost"),
+                "nodes_expanded": stats.get("nodes_expanded"),
+                "saved_at": time.strftime("%d %b %Y, %H:%M"),
+            })
+            self._write_bookmarks(bookmarks)
+            return bookmarks
+
+    def delete_bookmark(self, bookmark_id):
+        """Delete one bookmark and return the updated list."""
+        with self._bookmark_lock:
+            bookmarks = [b for b in self._read_bookmarks() if b["id"] != bookmark_id]
+            self._write_bookmarks(bookmarks)
+            return bookmarks
 

@@ -142,7 +142,7 @@ async function init() {
   document.getElementById("reset-btn").addEventListener("click", resetPoints);
 
   document.getElementById("start-btn").addEventListener("click", startRun);
-
+  await setupBookmarks();
   document.getElementById("loading").classList.add("hidden");
 }
 

@@ -177,3 +177,88 @@ button:hover {
 .leaflet-control-attribution a {
   color: var(--accent);
 }
+
+/* ---------- Bookmarks ---------- */
+.bookmark-save {
+  display: flex;
+  gap: 8px;
+}
+
+.bookmark-save input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 8px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font: inherit;
+}
+
+.bookmark-save input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.bookmark-save button {
+  width: auto;
+  margin-top: 0;
+  padding: 7px 12px;
+}
+
+#bookmark-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+}
+
+#bookmark-list li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+  padding: 6px 0;
+}
+
+#bookmark-list .open {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+  margin: 0;
+  text-align: left;
+  border: none;
+  padding: 2px 0;
+}
+
+#bookmark-list .open b {
+  display: block;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#bookmark-list .open small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+#bookmark-list .delete {
+  width: auto;
+  margin: 0;
+  border: none;
+  padding: 2px 6px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+#bookmark-list .delete:hover {
+  color: var(--end);
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 12px;
+  margin: 8px 0 0;
+}

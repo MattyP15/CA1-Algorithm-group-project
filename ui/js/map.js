@@ -3,6 +3,10 @@ const COLOURS = {
   road: "#4a525e",
   start: "#3ddc84",
   end: "#ff5c5c",
+  explored: "#2bb3a3",   
+  frontier: "#f5a623",   
+  route: "#ff3d7f",      
+  current: "#ffffff",
 };
 
 // ---------- State shared with the other scripts later ----------
@@ -10,6 +14,7 @@ const state = {
   graph: null,      // { nodes, edges, bounds } from Python
   startId: null,    // OSM node ID of the start junction
   endId: null,      // OSM node ID of the end junction
+  edgeLookup: null, // "smallerId,largerId" -> road shape, for drawing the search
 };
 
 // elements, which keeps 20,000 streets smooth to pan and zoom.
@@ -25,15 +30,39 @@ map.attributionControl.addAttribution(
   '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 );
 
+// Layers stacked on top of the roads (Leaflet's roads pane is 400, higher = on top).
+map.createPane("search").style.zIndex = 450;   // explored / frontier / route
+map.createPane("points").style.zIndex = 460;   // start, end, current junction
+
 // Markers for the two chosen points (created when first needed).
 let startMarker = null;
 let endMarker = null;
-let solutionPath = null;
+
+// ---------- Helpers for drawing the search ----------
+function edgeKey(a, b) {
+  return a < b ? `${a},${b}` : `${b},${a}`;
+}
+
+function nodeLatLng(id) {
+  return state.graph.nodes[String(id)];
+}
+
+// The shape of the road between two junctions (with its curves),
+// or a straight line if we don't have it.
+function edgeCoords(a, b) {
+  return state.edgeLookup.get(edgeKey(a, b)) || [nodeLatLng(a), nodeLatLng(b)];
+}
 
 // ---------- Draw the road network ----------
 function drawRoads(graph) {
   // One polyline holding every street is far faster than 20,000 separate ones.
   const allStreets = graph.edges.map((edge) => edge.coords);
+
+  // Remember each road's shape so the animation can colour it later.
+  state.edgeLookup = new Map();
+  for (const edge of graph.edges) {
+    state.edgeLookup.set(edgeKey(edge.u, edge.v), edge.coords);
+  }
 
   L.polyline(allStreets, {
     color: COLOURS.road,
@@ -45,18 +74,12 @@ function drawRoads(graph) {
   map.fitBounds(graph.bounds, { padding: [20, 20] });
 }
 
-function drawSolution(coords) {
-    if (solutionPath) map.removeLayer(solutionPath);
-
-    solutionPath = L.polyline(coords, { color: "#4da3ff", weight: 5 }).addTo(map);
-
-
-}
 
 
 // ---------- Start / end selection ----------
 function makeMarker(latlng, colour) {
   return L.circleMarker(latlng, {
+    pane: "points",
     radius: 7,
     color: "#0f1216",       // dark outline so it stands out on the roads
     weight: 2,
@@ -66,9 +89,11 @@ function makeMarker(latlng, colour) {
 }
 
 async function handleMapClick(event) {
+  if (isAnimating()) return;   // ignore clicks while a search is playing
+
   const { lat, lng } = event.latlng;
 
-  // Ask Python which junction is closest to where the user clicked.
+    // Ask Python which junction is closest to where the user clicked.
   const nodeId = await window.pywebview.api.nearest_node(lat, lng);
   const nodeLatLng = state.graph.nodes[String(nodeId)];
 
@@ -87,8 +112,7 @@ async function handleMapClick(event) {
 }
 
 function resetPoints() {
-  if (solutionPath) map.removeLayer(solutionPath);
-  solutionPath = null;
+  clearAnimation();
   
   if (startMarker) map.removeLayer(startMarker);
   if (endMarker) map.removeLayer(endMarker);
@@ -103,18 +127,20 @@ async function startRun() {
       return;
     }
 
-  const coords = await window.pywebview.api.find_path(state.startId, state.endId);
-  if (coords === null) {
-      document.getElementById("hint").textContent = "No route found.";
-      return;
-    }
-  drawSolution(coords);
+  clearAnimation();
+  document.getElementById("hint").textContent = "Searching…";
+
+  const result = await window.pywebview.api.run_search(state.startId, state.endId);
+  document.getElementById("hint").innerHTML =
+    "Watching A* search. <b>Teal</b> = explored, <b>amber</b> = frontier.";
+  playAnimation(result);
 }
 
 // ---------- Sidebar text ----------
 function updateSidebar() {
   document.getElementById("start-value").textContent = state.startId ?? "not set";
   document.getElementById("end-value").textContent = state.endId ?? "not set";
+  refreshPlaybackButtons();
 
   const hint = document.getElementById("hint");
   if (state.startId === null) {
@@ -142,6 +168,7 @@ async function init() {
   document.getElementById("reset-btn").addEventListener("click", resetPoints);
 
   document.getElementById("start-btn").addEventListener("click", startRun);
+  setupPlayback();
   await setupBookmarks();
   document.getElementById("loading").classList.add("hidden");
 }

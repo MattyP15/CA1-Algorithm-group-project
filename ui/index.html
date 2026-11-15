@@ -35,6 +35,34 @@
     </section>
 
         <section class="panel">
+      <h2>Playback</h2>
+
+      <label class="slider-label" for="speed-slider">
+        <span>Speed</span>
+        <span id="speed-value">20 steps/s</span>
+      </label>
+      <input id="speed-slider" type="range" min="0" max="100" value="40">
+
+      <div class="button-row">
+        <button id="pause-btn" type="button">Pause</button>
+        <button id="step-btn" type="button">Step</button>
+        <button id="finish-btn" type="button">Finish</button>
+      </div>
+
+      <div class="progress"><div id="progress-bar"></div></div>
+      <p class="stat"><span>Explored</span><span id="progress-value">–</span></p>
+
+      <!-- The numbers A* is using for the junction it is exploring right now -->
+      <div class="ghf">
+        <div><i>g</i><b id="g-value">–</b><small>so far</small></div>
+        <div><i>h</i><b id="h-value">–</b><small>to go</small></div>
+        <div><i>f</i><b id="f-value">–</b><small>g + h</small></div>
+      </div>
+    </section>
+
+
+
+        <section class="panel">
       <h2>Bookmarks</h2>
       <div class="bookmark-save">
         <input id="bookmark-name" type="text" maxlength="60" placeholder="Name this route">
@@ -51,17 +79,20 @@
     </section>
   </aside>
 
-  <main id="map"></main>
-
-  <!-- Shown until the map has loaded -->
-  <div id="loading">
-    <div class="spinner"></div>
-    <p>Loading Exeter map…</p>
-  </div>
+    <main id="map">
+    <!-- What each colour means -->
+    <div id="legend">
+      <div><span class="swatch explored"></span>Explored</div>
+      <div><span class="swatch frontier"></span>Frontier</div>
+      <div><span class="swatch route"></span>Route</div>
+      <div><span class="swatch current"></span>Exploring now</div>
+    </div>
+  </main>
 
   <!-- Order matters: Leaflet first, then our code that uses it -->
   <script src="lib/leaflet.js"></script>
   <script src="js/map.js"></script>
-    <script src="js/bookmarks.js"></script>
+  <script src="js/animation.js"></script>
+  <script src="js/bookmarks.js"></script>
 </body>
 </html>

@@ -142,6 +142,47 @@ class Api:
         path, distance = search.run()
         return [self._latlon(graph.nodes[n]["x"], graph.nodes[n]["y"]) for n in path]
 
+    def run_search(self, start_node, end_node):
+        graph = self._get_loaded_graph()
+        start_node, end_node = int(start_node), int(end_node)
+        heuristic = haversine_formula.haversine_heuristic   
+
+        search = a_star.AStar(graph, start_node, end_node)
+        started = time.perf_counter()
+        path, cost = search.run()
+        time_ms = (time.perf_counter() - started) * 1000
+
+        explored_at = {node: i for i, node in enumerate(search.visited_order)}
+
+        steps = []
+        for i, node in enumerate(search.visited_order):
+            g = float(search.g_score[node])
+            h = float(heuristic(graph, node, end_node))
+
+            discovered = [
+                n for n in graph.neighbors(node)
+                if n in search.g_score and explored_at.get(n, math.inf) > i
+            ]
+
+            steps.append({
+                "node": node,
+                "parent": search.came_from.get(node),   # None for the start junction
+                "g": round(g, 1),
+                "h": round(h, 1),
+                "f": round(g + h, 1),
+                "discovered": discovered,
+            })
+
+            found = path is not None
+        return {
+            "found": found,
+            "path": path if found else [],
+            "cost": round(float(cost), 1) if found else None,
+            "nodes_expanded": len(search.visited_order),
+            "time_ms": round(time_ms, 2),
+            "steps": steps,
+        }
+
 # Bookmarks
     
 

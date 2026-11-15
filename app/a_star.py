@@ -16,13 +16,15 @@ from haversine_formula import haversine_heuristic
 
 class AStar:
 
-    def __init__(self, graph, start_node, dest_node):
+    def __init__(self, graph, start_node, dest_node, heuristic=haversine_heuristic):
         self.graph = graph
+        self.heuristic = heuristic
         self.start_node = start_node
         self.dest_node = dest_node
 
         # priority queue of (f_score, node). f = g (cost so far) + heuristic
-        self.open_set = [(haversine_heuristic(graph, start_node, dest_node), start_node)]
+        self.open_set = [(self.heuristic(graph, start_node, dest_node), start_node)]
+        self.max_open_size = 1
 
         # cost of reaching current node from start node. Is set to zero because start node = current node at startup.
         self.g_score = {start_node: 0}
@@ -72,8 +74,9 @@ class AStar:
                     g_score[neighbour] = new_g
                     came_from[neighbour] = current
 
-                    f_score = new_g + haversine_heuristic(graph, neighbour, dest)
+                    f_score = new_g + self.heuristic(graph, neighbour, dest)
                     heapq.heappush(open_set, (f_score, neighbour))
+                    self.max_open_size = max(self.max_open_size, len(open_set))
 
         # open set is empty and destination was never reached
         return None, float("inf")

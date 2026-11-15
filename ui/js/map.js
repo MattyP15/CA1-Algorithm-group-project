@@ -176,7 +176,8 @@ async function init() {
 // Wait until pywebview has connected the Python API, then start.
 window.addEventListener("pywebviewready", () => {
   init().catch((err) => {
-    document.querySelector("#loading p").textContent = "Failed to load map: " + err;
-    console.error(err);
+    console.error("Startup failed:", err);   // log first, so the real error always shows
+    const message = document.querySelector("#loading p");
+    if (message) message.textContent = "Failed to load map: " + err;
   });
 });

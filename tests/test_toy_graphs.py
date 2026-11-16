@@ -55,8 +55,7 @@ def test_parallel_edges_uses_shortest(make_graph, h):
     assert cost == pytest.approx(224)
 
 def test_two_equal_routes(make_graph, h):
-    coords = {"A": (50.000, -3.5), "U": (50.001, -3.499),
-              "L": (50.001, -3.501), "C": (50.002, -3.5)}
+    coords = {"A": (50.000, -3.5), "U": (50.001, -3.499), "L": (50.001, -3.501), "C": (50.002, -3.5)}
     G = make_graph(coords, [("A", "U", 150), ("U", "C", 150), ("A", "L", 150), ("L", "C", 150)])
     path, cost = AStar(G, "A", "C", h).run()
     assert cost == pytest.approx(300)

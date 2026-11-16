@@ -24,6 +24,44 @@ body {
   display: flex;          /* sidebar and map side by side */
 }
 
+#welcome-page {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;          /* above Leaflet and the loading screen */
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
+    url(../lib/images/exeter-welcome-page-map.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  }
+
+#welcome-page h1 {
+  font-size: 42px;
+}
+
+#welcome-page button {
+  width: 120px;
+}
+
+#welcome-btn {
+  border-color: var(--start);
+  color: var(--start);
+}
+
+#quit-btn:hover {
+  border-color: var(--end);
+  color: var(--end);
+}
+
 #sidebar {
   width: 280px;
   flex-shrink: 0;         /* never let the map squash the sidebar */

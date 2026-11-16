@@ -8,7 +8,13 @@
   <link rel="stylesheet" href="lib/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+  <div id="welcome-page">
+    <h1> Exeter Route Planner</h1>
+    <button id="welcome-btn" type="button">Get Started</button>
+    <button id="quit-btn" type="button">Quit</button>
+  </div>
   <aside id="sidebar">
     <header>
       <h1>Exeter Route Planner</h1>
@@ -97,7 +103,11 @@
 
   <!-- Order matters: Leaflet first, then our code that uses it -->
   <script src="lib/leaflet.js"></script>
+  <script> document.getElementById("welcome-btn").onclick = () =>
+  document.getElementById("welcome-page").remove();  
+  </script>
   <script src="js/map.js"></script>
+
   <script src="js/animation.js"></script>
   <script src="js/bookmarks.js"></script>
 </body>

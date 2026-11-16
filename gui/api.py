@@ -5,6 +5,8 @@ import math
 import sys
 import threading
 import time
+import webview
+
 from pathlib import Path
 
 ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent.parent))
@@ -54,6 +56,9 @@ class Api:
         self._graph = None              # the osmnx graph, loaded on first use
         self._lock = threading.Lock()   # pywebview runs each JS call in its own thread
         self._bookmark_lock = threading.Lock()   # stops two saves overwriting each other
+
+    def quit(self):
+        webview.windows[0].destroy()
 
     def _get_loaded_graph(self):
         with self._lock:

@@ -11,10 +11,12 @@
 
 <body>
   <div id="welcome-page">
-    <h1> Exeter Route Planner</h1>
+    <h1>Exeter Route Planner</h1>
+    <p>Pick two points on the map and watch A* explore the streets of Exeter, junction by junction.</p>
     <button id="welcome-btn" type="button">Get Started</button>
     <button id="quit-btn" type="button">Quit</button>
   </div>
+</div>
   <aside id="sidebar">
     <header>
       <h1>Exeter Route Planner</h1>
@@ -104,7 +106,10 @@
   <!-- Order matters: Leaflet first, then our code that uses it -->
   <script src="lib/leaflet.js"></script>
   <script> document.getElementById("welcome-btn").onclick = () =>
-  document.getElementById("welcome-page").remove();  
+    document.getElementById("welcome-page").remove();  
+  </script>
+  <script> document.getElementById("quit-btn").onclick = () => 
+    window.pywebview.api.quit();
   </script>
   <script src="js/map.js"></script>
 

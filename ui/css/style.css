@@ -35,26 +35,28 @@ body {
   justify-content: center;
   gap: 12px;
   text-align: center;
-  font-family: 'Courier New', Courier, monospace;
-  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
-    url(../lib/images/exeter-welcome-page-map.png);
-  background-size: contain;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+    url(../lib/images/exeter-map.png);
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-
-  }
+  overflow: hidden;
+  transition: opacity 0.5s ease, transform 0.5s ease;;
+}
 
 #welcome-page h1 {
   font-size: 42px;
 }
 
 #welcome-page button {
+  flex-direction: column;
   width: 120px;
 }
 
 #welcome-btn {
+  background-color: var(--start);
   border-color: var(--start);
-  color: var(--start);
+  color: var(--bg);
 }
 
 #quit-btn:hover {

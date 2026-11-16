@@ -16,6 +16,17 @@ to run:
        from root:
                  python main.py
 
+## Saved routes (bookmarks)
+OS Location 
+
+| Windows | `%APPDATA%\ExeterRoutePlanner\bookmarks.json`<br>(usually `C:\Users\<username>\AppData\Roaming\ExeterRoutePlanner\`) |
+| macOS | `~/Library/Application Support/ExeterRoutePlanner/bookmarks.json` |
+| Linux | `$XDG_DATA_HOME/ExeterRoutePlanner/bookmarks.json`<br>(usually `~/.local/share/ExeterRoutePlanner/`) |
+
+The folder is created the first time you save a bookmark.
+To clear all bookmarks, delete `bookmarks.json`. If the file is damaged,
+the app starts with an empty list instead of crashing.
+
 Or, simply run the provided executable.
 
 ## Testing Instructions

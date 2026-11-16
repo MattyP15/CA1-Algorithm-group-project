@@ -8,7 +8,15 @@
   <link rel="stylesheet" href="lib/leaflet.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
+  <div id="welcome-page">
+    <h1>Exeter Route Planner</h1>
+    <p>Pick two points on the map and watch A* explore the streets of Exeter, junction by junction.</p>
+    <button id="welcome-btn" type="button">Get Started</button>
+    <button id="quit-btn" type="button">Quit</button>
+  </div>
+</div>
   <aside id="sidebar">
     <header>
       <h1>Exeter Route Planner</h1>
@@ -30,7 +38,46 @@
         <span class="value" id="end-value">not set</span>
       </div>
 
+      <button id="start-btn" type="button">Start Run</button>
       <button id="reset-btn" type="button">Reset</button>
+    </section>
+
+        <section class="panel">
+      <h2>Playback</h2>
+
+      <label class="slider-label" for="speed-slider">
+        <span>Speed</span>
+        <span id="speed-value">20 steps/s</span>
+      </label>
+      <input id="speed-slider" type="range" min="0" max="100" value="40">
+
+      <div class="button-row">
+        <button id="pause-btn" type="button">Pause</button>
+        <button id="step-btn" type="button">Step</button>
+        <button id="finish-btn" type="button">Finish</button>
+      </div>
+
+      <div class="progress"><div id="progress-bar"></div></div>
+      <p class="stat"><span>Explored</span><span id="progress-value">–</span></p>
+
+      <!-- The numbers A* is using for the junction it is exploring right now -->
+      <div class="ghf">
+        <div><i>g</i><b id="g-value">–</b><small>so far</small></div>
+        <div><i>h</i><b id="h-value">–</b><small>to go</small></div>
+        <div><i>f</i><b id="f-value">–</b><small>g + h</small></div>
+      </div>
+    </section>
+
+
+
+        <section class="panel">
+      <h2>Bookmarks</h2>
+      <div class="bookmark-save">
+        <input id="bookmark-name" type="text" maxlength="60" placeholder="Name this route">
+        <button id="bookmark-btn" type="button">Save</button>
+      </div>
+      <ul id="bookmark-list"></ul>
+      <p class="empty" id="bookmark-empty">No saved routes yet.</p>
     </section>
 
     <section class="panel">
@@ -40,9 +87,17 @@
     </section>
   </aside>
 
-  <main id="map"></main>
+    <main id="map">
+    <!-- What each colour means -->
+    <div id="legend">
+      <div><span class="swatch explored"></span>Explored</div>
+      <div><span class="swatch frontier"></span>Frontier</div>
+      <div><span class="swatch route"></span>Route</div>
+      <div><span class="swatch current"></span>Exploring now</div>
+    </div>
+  </main>
 
-  <!-- Shown until the map has loaded -->
+    <!-- Shown until the map has loaded -->
   <div id="loading">
     <div class="spinner"></div>
     <p>Loading Exeter map…</p>
@@ -50,6 +105,15 @@
 
   <!-- Order matters: Leaflet first, then our code that uses it -->
   <script src="lib/leaflet.js"></script>
+  <script> document.getElementById("welcome-btn").onclick = () =>
+    document.getElementById("welcome-page").remove();  
+  </script>
+  <script> document.getElementById("quit-btn").onclick = () => 
+    window.pywebview.api.quit();
+  </script>
   <script src="js/map.js"></script>
+
+  <script src="js/animation.js"></script>
+  <script src="js/bookmarks.js"></script>
 </body>
 </html>

@@ -24,10 +24,12 @@ body {
   display: flex;          /* sidebar and map side by side */
 }
 
+/* Welcome Page */
+
 #welcome-page {
   position: fixed;
   inset: 0;
-  z-index: 10000;          /* above Leaflet and the loading screen */
+  z-index: 10000;
   background: var(--bg);
   display: flex;
   flex-direction: column;
@@ -64,6 +66,16 @@ body {
   color: var(--end);
 }
 
+/* MAP */
+
+#map {
+  flex: 1;
+  height: 100%;
+  background: var(--bg);
+}
+
+/* ---------- Sidebar contents ---------- */
+
 #sidebar {
   width: 280px;
   flex-shrink: 0;         /* never let the map squash the sidebar */
@@ -74,13 +86,6 @@ body {
   overflow-y: auto;
 }
 
-#map {
-  flex: 1;                /* take all remaining width */
-  height: 100%;           /* Leaflet maps are invisible without a height */
-  background: var(--bg);
-}
-
-/* ---------- Sidebar contents ---------- */
 h1 {
   font-size: 18px;
   margin: 0;

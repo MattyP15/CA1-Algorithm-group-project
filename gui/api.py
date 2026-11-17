@@ -182,7 +182,7 @@ class Api:
 
             steps.append({
                 "node": node,
-                "parent": search.came_from.get(node),   # None for the start junction
+                "parent": search.parent.get(node),   # None for the start junction
                 "g": round(g, 1),
                 "h": round(h, 1),
                 "f": round(g + h, 1),

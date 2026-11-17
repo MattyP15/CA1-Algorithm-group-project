@@ -1,4 +1,4 @@
-// Draw the saved routes in the sidebar list.
+// Draw the saved routes
 function renderBookmarks(bookmarks) {
   const list = document.getElementById("bookmark-list");
   list.replaceChildren();                  // remove the old list

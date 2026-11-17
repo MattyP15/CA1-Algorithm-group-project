@@ -11,7 +11,7 @@ UI_FILE = ROOT / "ui" / "index.html"
 #Will turn this off for final .exe
 DEBUG = True    
 
-def main():
+def start_gui():
     webview.create_window(
         title="Exeter Route Planner",
         url=str(UI_FILE),
@@ -26,4 +26,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    start_gui()

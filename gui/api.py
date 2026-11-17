@@ -26,6 +26,8 @@ landmarks = _load_module("app/landmarks.py")
 
 MAP_FILE = ROOT / "data" / "maps" / "exeter.graphml"
 
+BACKGROUND_FILE = ROOT / "data" / "maps" / "exeter_background.geojson"
+
 COORD_DECIMALS = 5
 
 ROAD_CLASSES = {
@@ -74,16 +76,21 @@ class Api:
         """osmnx stores x = longitude, y = latitude. Leaflet wants [lat, lon]."""
         return [round(y, COORD_DECIMALS), round(x, COORD_DECIMALS)]
 
-    def get_graph(self):
-        """Return the map as plain data the UI can draw.
+    @staticmethod    
+    def _road_class(highway):
+        types = highway if isinstance(highway, list) else [highway]
+        best = "path"
+        for road_type in types:
+            road_class = "minor"                 
+            for name, members in ROAD_CLASSES.items():
+                if road_type in members:
+                    road_class = name
+            if CLASS_RANK[road_class] > CLASS_RANK[best]:
+                best = road_class
+        return best  
 
-        {
-          "nodes": {"30792310": [lat, lon], ...},
-          "edges": [{"u": 30792310, "v": 30792455, "length": 48.96,
-                     "coords": [[lat, lon], [lat, lon], ...]}, ...],
-          "bounds": [[south, west], [north, east]]
-        }
-        """
+    def get_graph(self):
+        
         graph = self._get_loaded_graph()
 
         nodes = {
@@ -100,7 +107,7 @@ class Api:
                 continue
             seen.add(pair)
 
-            # Straight roads don't, so we just join the two end nodes.
+            
             if "geometry" in data:
                 coords = [self._latlon(x, y) for x, y in data["geometry"].coords]
             else:
@@ -110,6 +117,7 @@ class Api:
                 "u": u,
                 "v": v,
                 "length": round(float(data["length"]), 2),
+                "kind": self._road_class(data.get("highway", "")),
                 "coords": coords,
             })
 
@@ -119,16 +127,17 @@ class Api:
 
         return {"nodes": nodes, "edges": edges, "bounds": bounds}
 
-    def nearest_node(self, lat, lon):
-        """Return the ID of the junction closest to a clicked point.
+    def get_background(self):
+        if not BACKGROUND_FILE.exists():
+            return None
+        return json.loads(BACKGROUND_FILE.read_text(encoding="utf-8"))
 
-        A simple check of every node is fast enough for ~16,000 nodes, and it
-        avoids needing scikit-learn (which osmnx.nearest_nodes requires).
-        """
+    def nearest_node(self, lat, lon):
+        
         graph = self._get_loaded_graph()
 
-        # Over a city-sized area, longitude degrees are shorter than latitude
-        # degrees by cos(latitude). Scaling by it makes the distance fair.
+
+        
         lon_scale = math.cos(math.radians(lat))
 
         best_id = None
@@ -190,7 +199,6 @@ class Api:
             "steps": steps,
         }
 
-# Bookmarks
     
 
     def _read_bookmarks(self):

@@ -9,6 +9,21 @@ const COLOURS = {
   current: "#ffffff",
 };
 
+//simplified street style
+const ROAD_STYLES = {
+  path:{ color: "#2c333d", weight: 0.8, dashArray: "2 3" },
+  minor:{ color: "#353d48", weight: 1.0 },
+  medium:{ color: "#4b5462", weight: 1.6 },
+  major:{ color: "#8d8473", weight: 2.8 },
+};
+
+const BACKGROUND_STYLES = {
+  green:{ color: "#173024", fillColor: "#14271e", weight: 0, fillOpacity: 1 },
+  water:{ color: "#1b3a57", fillColor: "#132c45", weight: 1, fillOpacity: 1 },
+  river:{ color: "#1d4166", weight: 3 },
+  building:{ color: "#1c2128", fillColor: "#191d23", weight: 0.5, fillOpacity: 1 },
+};
+
 // ---------- State shared with the other scripts later ----------
 const state = {
   graph: null,      // { nodes, edges, bounds } from Python
@@ -33,8 +48,9 @@ map.attributionControl.addAttribution(
 // Layers stacked on top of the roads (Leaflet's roads pane is 400, higher = on top).
 map.createPane("search").style.zIndex = 450;   // explored / frontier / route
 map.createPane("points").style.zIndex = 460;   // start, end, current junction
+map.createPane("background").style.zIndex = 350;   // parks, water, buildings
 
-// Markers for the two chosen points (created when first needed).
+// Markers for start/end
 let startMarker = null;
 let endMarker = null;
 
@@ -47,32 +63,37 @@ function nodeLatLng(id) {
   return state.graph.nodes[String(id)];
 }
 
-// The shape of the road between two junctions (with its curves),
-// or a straight line if we don't have it.
+// shape accounting for junctions
+
 function edgeCoords(a, b) {
   return state.edgeLookup.get(edgeKey(a, b)) || [nodeLatLng(a), nodeLatLng(b)];
 }
 
-// ---------- Draw the road network ----------
+//the roads
 function drawRoads(graph) {
-  // One polyline holding every street is far faster than 20,000 separate ones.
-  const allStreets = graph.edges.map((edge) => edge.coords);
-
-  // Remember each road's shape so the animation can colour it later.
+  const groups = { path: [], minor: [], medium: [], major: [] };
   state.edgeLookup = new Map();
   for (const edge of graph.edges) {
+    (groups[edge.kind] || groups.minor).push(edge.coords);
     state.edgeLookup.set(edgeKey(edge.u, edge.v), edge.coords);
   }
 
-  L.polyline(allStreets, {
-    color: COLOURS.road,
-    weight: 1.2,
-    opacity: 0.9,
-    interactive: false,   // clicks go to the map, not the lines
-  }).addTo(map);
-
+  for (const kind of ["path", "minor", "medium", "major"]) {
+    L.polyline(groups[kind], { ...ROAD_STYLES[kind], interactive: false }).addTo(map);
+  }
   map.fitBounds(graph.bounds, { padding: [20, 20] });
 }
+
+
+  function drawBackground(geojson) {
+  L.geoJSON(geojson, {
+    pane: "background",
+    interactive: false,
+    style: (feature) => BACKGROUND_STYLES[feature.properties.kind] || BACKGROUND_STYLES.building,
+  }).addTo(map);
+}
+
+
 
 function addLabels(landmarkNames){
   for (const [nodeId, name] of Object.entries(landmarkNames)) {
@@ -120,19 +141,19 @@ async function handleMapClick(event) {
 
   const { lat, lng } = event.latlng;
 
-    // Ask Python which junction is closest to where the user clicked.
+
   const nodeId = await window.pywebview.api.nearest_node(lat, lng);
-  const nodeLatLng = state.graph.nodes[String(nodeId)];
+  const clickedLatLng = state.graph.nodes[String(nodeId)];
 
   if (state.startId === null || state.endId !== null) {
-    // First click, or both are already set: (re)start with a new start point.
+    
     resetPoints();
     state.startId = nodeId;
-    startMarker = makeMarker(nodeLatLng, COLOURS.start);
+    startMarker = makeMarker(clickedLatLng, COLOURS.start);
   } else {
-    // Second click: set the end point.
+    
     state.endId = nodeId;
-    endMarker = makeMarker(nodeLatLng, COLOURS.end);
+    endMarker = makeMarker(clickedLatLng, COLOURS.end);
   }
 
   updateSidebar();
@@ -180,11 +201,14 @@ function updateSidebar() {
 }
 
 // ---------- Startup ----------
-async function init() {
+async function initApp() {
   const graph = await window.pywebview.api.get_graph();
   state.graph = graph;
 
   drawRoads(graph);
+
+  const background = await window.pywebview.api.get_background();
+  if (background) drawBackground(background);
 
   const landmarkNames = await window.pywebview.api.get_landmarks();
   addLabels(landmarkNames);
@@ -203,9 +227,9 @@ async function init() {
   document.getElementById("loading").classList.add("hidden");
 }
 
-// Wait until pywebview has connected the Python API, then start.
+// Wait
 window.addEventListener("pywebviewready", () => {
-  init().catch((err) => {
+  initApp().catch((err) => {
     console.error("Startup failed:", err);   // log first, so the real error always shows
     const message = document.querySelector("#loading p");
     if (message) message.textContent = "Failed to load map: " + err;

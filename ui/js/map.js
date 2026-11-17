@@ -74,7 +74,34 @@ function drawRoads(graph) {
   map.fitBounds(graph.bounds, { padding: [20, 20] });
 }
 
+function addLabels(landmarkNames){
+  for (const [nodeId, name] of Object.entries(landmarkNames)) {
+    const latlng = state.graph.nodes[String(nodeId)];
 
+    if (!latlng) {
+      console.warn(`Landmark node ${nodeId} is missing from the graph.`);
+      continue;
+    }
+
+    const label = document.createElement("span");
+    label.textContent = name;
+
+    L.circleMarker(latlng, {
+      pane: "points",
+      radius: 4,
+      color: "#0f1216",
+      weight: 1,
+      fillColor: "#f5a623",
+      fillOpacity: 1,
+    })
+      .bindTooltip(label, {
+        permanent: true,
+        direction: "top",
+        offset: [0, -4],
+      })
+      .addTo(map);
+  }
+}
 
 // ---------- Start / end selection ----------
 function makeMarker(latlng, colour) {
@@ -158,6 +185,9 @@ async function init() {
   state.graph = graph;
 
   drawRoads(graph);
+
+  const landmarkNames = await window.pywebview.api.get_landmarks();
+  addLabels(landmarkNames);
 
   document.getElementById("node-count").textContent =
     Object.keys(graph.nodes).length.toLocaleString();

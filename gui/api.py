@@ -22,6 +22,7 @@ def _load_module(relative_path):
 get_geo_data = _load_module("app/get_geo_data.py")
 haversine_formula = _load_module("app/haversine_formula.py")  # for the search later
 a_star = _load_module("app/a_star.py")
+landmarks = _load_module("app/landmarks.py")
 
 MAP_FILE = ROOT / "data" / "maps" / "exeter.graphml"
 
@@ -56,6 +57,7 @@ class Api:
         self._graph = None              # the osmnx graph, loaded on first use
         self._lock = threading.Lock()   # pywebview runs each JS call in its own thread
         self._bookmark_lock = threading.Lock()   # stops two saves overwriting each other
+        self._landmarks_dict = None
 
     def quit(self):
         webview.windows[0].destroy()
@@ -233,3 +235,14 @@ class Api:
             self._write_bookmarks(bookmarks)
             return bookmarks
 
+    def get_landmarks(self):
+        with self._lock:
+            if self._graph is None:
+                self._graph = get_geo_data.load_data(MAP_FILE)
+
+            if self._landmarks_dict is None:
+                node_names = landmarks.landmarks(self._graph)
+                
+                self._landmarks_dict = { str(node_id): name for node_id, name in node_names.items() }
+
+            return(self._landmarks_dict)

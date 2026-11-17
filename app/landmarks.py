@@ -21,9 +21,11 @@ landmarks_list = {
     "Royal Devon and Exeter Hospital (Heavitree)": (50.7245, -3.5138)
 }
 
-landmark_nodes = {}
+
 
 def landmarks(graph):
+
+    landmark_nodes = {}
 
     for name, (lat, lon) in landmarks_list.items():
 

@@ -81,11 +81,12 @@ function drawRoads(graph) {
   for (const kind of ["path", "minor", "medium", "major"]) {
     L.polyline(groups[kind], { ...ROAD_STYLES[kind], interactive: false }).addTo(map);
   }
-  map.fitBounds(graph.bounds, { padding: [20, 20] });
+  // Centre map and set size.
+  const bounds = L.latLngBounds(graph.bounds);
+  map.setView(bounds.getCenter(), map.getBoundsZoom(bounds));
 }
 
-
-  function drawBackground(geojson) {
+function drawBackground(geojson) {
   L.geoJSON(geojson, {
     pane: "background",
     interactive: false,

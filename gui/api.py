@@ -26,6 +26,8 @@ landmarks = _load_module("app/landmarks.py")
 
 MAP_FILE = ROOT / "data" / "maps" / "exeter.graphml"
 
+BACKGROUND_FILE = ROOT / "data" / "maps" / "exeter_background.geojson"
+
 COORD_DECIMALS = 5
 
 ROAD_CLASSES = {
@@ -74,6 +76,7 @@ class Api:
         """osmnx stores x = longitude, y = latitude. Leaflet wants [lat, lon]."""
         return [round(y, COORD_DECIMALS), round(x, COORD_DECIMALS)]
 
+    @staticmethod    
     def _road_class(highway):
         types = highway if isinstance(highway, list) else [highway]
         best = "path"
@@ -123,6 +126,11 @@ class Api:
         bounds = [[min(lats), min(lons)], [max(lats), max(lons)]]
 
         return {"nodes": nodes, "edges": edges, "bounds": bounds}
+
+    def get_background(self):
+        if not BACKGROUND_FILE.exists():
+            return None
+        return json.loads(BACKGROUND_FILE.read_text(encoding="utf-8"))
 
     def nearest_node(self, lat, lon):
         
@@ -191,7 +199,6 @@ class Api:
             "steps": steps,
         }
 
-# Bookmarking feature 
     
 
     def _read_bookmarks(self):

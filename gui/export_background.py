@@ -5,7 +5,7 @@ Run from the project root, with internet access:
     python -m gui.export_background
     python -m gui.export_background --no-buildings     # smaller file, no buildings
 
-Saves data/maps/exeter_background.geojson.
+Saves data/maps/exeter_background.geojson
 The data comes from OpenStreetMap (© OpenStreetMap contributors, ODbL).
 """
 import argparse

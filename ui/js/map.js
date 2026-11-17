@@ -17,6 +17,13 @@ const ROAD_STYLES = {
   major:{ color: "#8d8473", weight: 2.8 },
 };
 
+const BACKGROUND_STYLES = {
+  green:{ color: "#173024", fillColor: "#14271e", weight: 0, fillOpacity: 1 },
+  water:{ color: "#1b3a57", fillColor: "#132c45", weight: 1, fillOpacity: 1 },
+  river:{ color: "#1d4166", weight: 3 },
+  building:{ color: "#1c2128", fillColor: "#191d23", weight: 0.5, fillOpacity: 1 },
+};
+
 // ---------- State shared with the other scripts later ----------
 const state = {
   graph: null,      // { nodes, edges, bounds } from Python
@@ -41,6 +48,7 @@ map.attributionControl.addAttribution(
 // Layers stacked on top of the roads (Leaflet's roads pane is 400, higher = on top).
 map.createPane("search").style.zIndex = 450;   // explored / frontier / route
 map.createPane("points").style.zIndex = 460;   // start, end, current junction
+map.createPane("background").style.zIndex = 350;   // parks, water, buildings
 
 // Markers for start/end
 let startMarker = null;
@@ -63,20 +71,29 @@ function edgeCoords(a, b) {
 
 //the roads
 function drawRoads(graph) {
-  
-const groups = { path: [], minor: [], medium: [], major: [] };
+  const groups = { path: [], minor: [], medium: [], major: [] };
   state.edgeLookup = new Map();
   for (const edge of graph.edges) {
     (groups[edge.kind] || groups.minor).push(edge.coords);
     state.edgeLookup.set(edgeKey(edge.u, edge.v), edge.coords);
   }
 
-  
   for (const kind of ["path", "minor", "medium", "major"]) {
     L.polyline(groups[kind], { ...ROAD_STYLES[kind], interactive: false }).addTo(map);
   }
   map.fitBounds(graph.bounds, { padding: [20, 20] });
 }
+
+
+  function drawBackground(geojson) {
+  L.geoJSON(geojson, {
+    pane: "background",
+    interactive: false,
+    style: (feature) => BACKGROUND_STYLES[feature.properties.kind] || BACKGROUND_STYLES.building,
+  }).addTo(map);
+}
+
+
 
 function addLabels(landmarkNames){
   for (const [nodeId, name] of Object.entries(landmarkNames)) {
@@ -189,6 +206,9 @@ async function initApp() {
   state.graph = graph;
 
   drawRoads(graph);
+
+  const background = await window.pywebview.api.get_background();
+  if (background) drawBackground(background);
 
   const landmarkNames = await window.pywebview.api.get_landmarks();
   addLabels(landmarkNames);

@@ -28,18 +28,18 @@ const playback = {
 };
 
 // ---------- One step of A* ----------
-function applyStep(step) {
+function applySearchStep(step) {
   playback.exploredNodes.add(step.node);
 
-  // The road we arrived along turns teal.
+  
   if (step.parent !== null) {
     playback.exploredSegments.push(edgeCoords(step.parent, step.node));
   }
 
-  // This junction is explored, no longer waiting in the frontier.
+ 
   playback.frontier.delete(step.node);
 
-  // Roads to newly found neighbours turn amber.
+  
   for (const next of step.discovered) {
     if (playback.exploredNodes.has(next)) continue;
     if (!playback.frontier.has(next)) playback.frontier.set(next, []);
@@ -47,7 +47,7 @@ function applyStep(step) {
   }
 }
 
-// Redraw once per frame (not once per step) so fast speeds stay smooth.
+
 function renderPlayback() {
   exploredLayer.setLatLngs(playback.exploredSegments);
   frontierLayer.setLatLngs([...playback.frontier.values()].flat(1));
@@ -78,7 +78,7 @@ function playbackFrame(time) {
 
   const steps = playback.result.steps;
   while (due > 0 && playback.index < steps.length) {
-    applyStep(steps[playback.index]);
+    applySearchStep(steps[playback.index]);
     playback.index++;
     due--;
   }
@@ -91,14 +91,14 @@ function playbackFrame(time) {
   }
 }
 
-function startLoop() {
+function startPlaybackLoop() {
   playback.playing = true;
   playback.lastTime = performance.now();
   playback.frameId = requestAnimationFrame(playbackFrame);
   refreshPlaybackButtons();
 }
 
-function stopLoop() {
+function stopPlaybackLoop() {
   playback.playing = false;
   if (playback.frameId !== null) cancelAnimationFrame(playback.frameId);
   playback.frameId = null;
@@ -106,7 +106,7 @@ function stopLoop() {
 
 // ---------- End of the search: draw the route ----------
 function finishPlayback() {
-  stopLoop();
+  stopPlaybackLoop();
   if (map.hasLayer(currentMarker)) map.removeLayer(currentMarker);
   frontierLayer.setLatLngs([]);          // search is over, nothing is waiting
 
@@ -133,11 +133,11 @@ function playAnimation(result) {
   clearAnimation();
   playback.result = result;
   playback.budget = 1;                   // show the first step straight away
-  startLoop();
+  startPlaybackLoop();
 }
 
 function clearAnimation() {
-  stopLoop();
+  stopPlaybackLoop();
   Object.assign(playback, {
     result: null, index: 0, exploredSegments: [],
     exploredNodes: new Set(), frontier: new Map(),
@@ -160,17 +160,17 @@ function isAnimating() {
 
 function pauseOrResume() {
   if (playback.playing) {
-    stopLoop();
+    stopPlaybackLoop();
     refreshPlaybackButtons();
   } else if (isAnimating()) {
-    startLoop();
+    startPlaybackLoop();
   }
 }
 
 function stepOnce() {
   if (!isAnimating()) return;
-  stopLoop();
-  applyStep(playback.result.steps[playback.index]);
+  stopPlaybackLoop();
+  applySearchStep(playback.result.steps[playback.index]);
   playback.index++;
   renderPlayback();
   if (!isAnimating()) finishPlayback();
@@ -179,16 +179,16 @@ function stepOnce() {
 
 function skipToEnd() {
   if (!isAnimating()) return;
-  stopLoop();
+  stopPlaybackLoop();
   while (playback.index < playback.result.steps.length) {
-    applyStep(playback.result.steps[playback.index]);
+    applySearchStep(playback.result.steps[playback.index]);
     playback.index++;
   }
   renderPlayback();
   finishPlayback();
 }
 
-// Enable/disable buttons to match what can be done right now.
+
 function refreshPlaybackButtons() {
   const running = isAnimating();
   const pointsSet = state.startId !== null && state.endId !== null;
@@ -202,8 +202,8 @@ function refreshPlaybackButtons() {
 }
 
 // ---------- Speed slider ----------
-// Slider 0-100 -> 1 to about 3,000 steps per second. It's logarithmic,
-// so the slow end (good for explaining g, h and f) is easy to control.
+
+
 function sliderToSpeed(value) {
   return Math.pow(10, (value / 100) * 3.5);
 }

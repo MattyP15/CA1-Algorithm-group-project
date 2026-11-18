@@ -51,10 +51,15 @@ We then loop through a process of:
     2. If this new accumulated cost is greater than the accumulated cost of the current node plus the cost of reaching the current node from the start node, set the accumulated cost of the neighbouring node to be equal to that of the current node plus the cost of the neighbouring node.
     3. Then, insert or update the neighbouring node's accumulated cost in priority queue with its new accumulated cost plus its heuristic cost.
 
-
+The time complexity of the A* algorithm is O((V+E)log(V)), where V is the vertices of the graph and E is the graph's edges
+Its space complexity is O(V). 
+Hence it's memory usage is linear and computational cost is logmarithmic.
 
 
 ## Test Cases and Summary of Results
+
+For the testing we verified the A* algorithms performance on small, pre-calculated routes with answers we already know. 
+
 
 
 ## Limitations, Dependancies and Third Party Resources
@@ -80,7 +85,10 @@ Data for this project was collected from OpenStreetMaps.org and may have some li
 
 ## Each member's contributions
 
+James - Data processing for graph, Data for landmarks, Initial haversine_formula, Contributed to README documentation
+
 ## Required acknowledgement of generative AI use
+
 
 
 ### vvv DELETE WHEN DONE vvv

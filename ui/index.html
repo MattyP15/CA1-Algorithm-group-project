@@ -15,6 +15,7 @@
     <p>Pick two points on the map and watch A* explore the streets of Exeter, junction by junction.</p>
     <button id="welcome-btn" type="button">Get Started</button>
     <button id="quit-btn" type="button">Quit</button>
+    <footer>ECM3428 · A* Algorithm Group Project · Map data © OpenStreetMap contributors </footer>
   </div>
 </div>
   <aside id="sidebar">
@@ -105,14 +106,8 @@
 
   <!-- Order matters: Leaflet first, then our code that uses it -->
   <script src="lib/leaflet.js"></script>
-  <script> document.getElementById("welcome-btn").onclick = () =>
-    document.getElementById("welcome-page").remove();  
-  </script>
-  <script> document.getElementById("quit-btn").onclick = () => 
-    window.pywebview.api.quit();
-  </script>
+  <script src="js/welcome.js"></script>
   <script src="js/map.js"></script>
-
   <script src="js/animation.js"></script>
   <script src="js/bookmarks.js"></script>
 </body>

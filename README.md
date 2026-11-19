@@ -87,8 +87,9 @@ James Mann:
 
 Henry Riehl:
 - Welcome Page.
+- Loading of map data in the background.
 - A* Algorithm implementation.
-- Connection of disjointed graphs and pruning of small node pairs.
+- Manuel connection of disjointed graphs and pruning of small node pairs.
 
 Pyae Phyo Thaw: 
 - Initial Project Repo structure. 

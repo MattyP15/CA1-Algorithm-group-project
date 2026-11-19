@@ -79,13 +79,23 @@ threadpoolctl-3.8.0
 Data for this project was collected from OpenStreetMaps.org and may have some limited inaccuracies such as disconnected edges and nodes on the graph. However, this will not affect the quality of the demonstration of the algorithm in any way.
 
 ## Each member's contributions
+James Mann:
+ - Data processing for graph. 
+ - Data for landmarks. 
+ - Initial haversine_formula. 
+ - Contributed to README documentation.
 
 Henry Riehl:
 - Welcome Page.
 - A* Algorithm implementation.
 - Connection of disjointed graphs and pruning of small node pairs.
 
-Pyae - Initial Project Repo structure, GUI, UI, animations, offline functionality, Map Display, License, UX Features (Speed slider, Bookmarks)
+Pyae Phyo Thaw: 
+- Initial Project Repo structure. 
+- GUI, UI, animations.
+- Offline functionality.
+- Map Display.
+- License, UX Features (Speed slider, Bookmarks).
 
 ## Required acknowledgement of generative AI use
 

@@ -9,7 +9,7 @@ ROOT = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
 UI_FILE = ROOT / "ui" / "index.html"
 
 #Will turn this off for final .exe
-DEBUG = True    
+DEBUG = False    
 
 def start_gui():
     webview.create_window(

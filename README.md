@@ -87,6 +87,8 @@ Data for this project was collected from OpenStreetMaps.org and may have some li
 
 James - Data processing for graph, Data for landmarks, Initial haversine_formula, Contributed to README documentation
 
+Pyae - Initial Project Repo structure, GUI, UI, animations, offline functionality, Map Display, License, UX Features (Speed slider, Bookmarks)
+
 ## Required acknowledgement of generative AI use
 
 

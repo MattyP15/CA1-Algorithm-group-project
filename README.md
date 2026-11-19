@@ -69,7 +69,7 @@ A window called **Exeter Route Planner** opens. Choose a start and end point on 
     | Route | The shortest route, drawn once the goal is reached |
 
 4. **Control the playback.** Use the "Speed" slider, or "Pause", "Step" (one junction at a time), and "Finish" (jump to the results). The progress bar shows how many junctions have been explored.
-5. **Watch the numbers.** While stepping, the sidebar shows "g" (distance so far) and "f = g + h" for the junction being explored. A\* always explored the junction with the lowest "f" next.
+5. **Watch the numbers.** While stepping, the sidebar shows "g" (distance so far), "h" (the straight line estimate of the distance left) and "f = g + h" for the junction being explored. A\* always explored the junction with the lowest "f" next.
 6. **Save the route.** Type a name under "Bookmarks" and click "Save". Click a saved route at any time to load it again later. See [Saved routes](#saved-routes-bookmarks) for where these are stored.
 7. **Try another route.** Click "Reset".
 

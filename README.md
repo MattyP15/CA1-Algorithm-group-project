@@ -21,7 +21,7 @@ This project is a demonstration of the A* Algorithm, intended for an audience of
 2. [Using the app](#using-the-app)
 3. [Running the tests](#running-the-tests)
 4. [How the algorithm works](#how-the-algorithm-works)
-5. [Test cases and summary of resutls](#test-cases-and-summary-of-results)
+5. [Test cases and summary of results](#test-cases-and-summary-of-results)
 6. [Limitations, dependencies and third-party resources](#limitations-dependencies-and-third-party-resources)
 7. [Saved routes (bookmarks)](#saved-routes-bookmarks)
 8. [Each member's contributions](#each-members-contributions)
@@ -58,7 +58,7 @@ A window called **Exeter Route Planner** opens. Choose a start and end point on 
 ## Using the app
 
 1. **Get started.** Click "Get Started" on the welcome page.
-2. **Choose a route.** Click the map once to set the start and again to set the end. Landmarks such as Exeter Cathedral, St Davids Station and Streathem Campus are labelled on the map to help.
+2. **Choose a route.** Click the map once to set the start and again to set the end. Landmarks such as Exeter Cathedral, St Davids Station and Streatham Campus are labelled on the map to help.
 3. **Run the search.** Click "Start Run". The map animates A\* as it works (Colour legend is located in the top right):
 
     | Colour on the map | Meaning |
@@ -68,7 +68,7 @@ A window called **Exeter Route Planner** opens. Choose a start and end point on 
     | Exploring now | The junction being examined at this moment |
     | Route | The shortest route, drawn once the goal is reached |
 
-4. **Control the playback.** Used the "Speed" slider, or "Pause", "Step" (one junction at a time), and "Finish" (jump to the results). The progress bar shows how many junctions have been explored.
+4. **Control the playback.** Use the "Speed" slider, or "Pause", "Step" (one junction at a time), and "Finish" (jump to the results). The progress bar shows how many junctions have been explored.
 5. **Watch the numbers.** While stepping, the sidebar shows "g" (distance so far) and "f = g + h" for the junction being explored. A\* always explored the junction with the lowest "f" next.
 6. **Save the route.** Type a name under "Bookmarks" and click "Save". Click a saved route at any time to load it again later. See [Saved routes](#saved-routes-bookmarks) for where these are stored.
 7. **Try another route.** Click "Reset".
@@ -88,7 +88,7 @@ python -m pytest tests -v
 # 2. Benchmarks: Runs every heuristic on 60 random routes (roughly 1-2 minutes)
 python -m benchmarks.run_benchmarks     # Add --quick for a short version
 
-# 3. Convert resutls into tables and charts
+# 3. Convert results into tables and charts
 python -m benchmarks.make_report
 ```
 
@@ -146,7 +146,7 @@ With V nodes, E edges, and a binary-heap priority queue:
 | | Complexity | Why |
 |---|---|---|
 | **Time (Worst Case)** | O((V + E) log V) | Each node is expanded at most once. Each edge can add one entry to the heap at O(log V) per operation |
-| **Space (Worst Case)** | O(V + E) | g-scores, previous-node records, and the visited set hold up yo V entries. The heap can hold up to E entries |
+| **Space (Worst Case)** | O(V + E) | g-scores, previous-node records, and the visited set hold up to V entries. The heap can hold up to E entries |
 
 The worst case is the same as Dijkstra's, which is what A\* becomes when h = 0. In practice, a heuristic is good when fewer nodes are expanded. On our map, haversine A\* expanded 3.5x fewer nodes than Dijkstra on average (see below).
 
@@ -158,9 +158,9 @@ The worst case is the same as Dijkstra's, which is what A\* becomes when h = 0. 
 
 | Group | Tests | What is checked |
 |---|---|---|
-| **Hand-made graphs** (`tests/test_toy_graphs.py`) | 16 | Straight line, a cheap Detour beating an expensive direct edge, unreachable goal, start equals goal, one-way streets, parallel edges (the shortest is used), tied routes, statistics recorded. Each test runs with haversine and with h = 0. |
+| **Hand-made graphs** (`tests/test_toy_graphs.py`) | 16 | Straight line, a cheap detour beating an expensive direct edge, unreachable goal, start equals goal, one-way streets, parallel edges (the shortest is used), tied routes, statistics recorded. Each test runs with haversine and with h = 0. |
 | **Matches Dijkstra** (`tests/test_real_map.py`) | 3 | On 100 random Exeter routes, the route length equals NetworkX's independent Dijkstra implementation and equals the sum of the edges actually used. Haversine never expands more nodes than h = 0. |
-| **Theory Checks** (`tests/test_real_map.py`) | 7 | Haversine never overestimates (adminssible) and is consistent on every edge, weighted A\* never exceeds *w* x the optimal route length (w = 1.2, 1.5, 2, 3), Manhattan distance overestimates somewhere. |
+| **Theory Checks** (`tests/test_real_map.py`) | 7 | Haversine never overestimates (admissible) and is consistent on every edge, weighted A\* never exceeds *w* x the optimal route length (w = 1.2, 1.5, 2, 3), Manhattan distance overestimates somewhere. |
 
 ### Benchmarks: Comparing heuristics
 
@@ -178,14 +178,14 @@ Every heuristic was run on the same 60 random routes on the full map. Times are 
 
 **What the comparisons are:**
 - **Dijkstra (h = 0):** no estimate at all, the baseline
-- **Manhattan:** north-south plus east-west distance. It is inadmissible (It overestimates diagonal paths), included to show what happens when the heuristic break the rile.
+- **Manhattan:** north-south plus east-west distance. It is inadmissible (It overestimates diagonal paths), included to show what happens when the heuristic break the rule.
 - **Weighted:** w x haversine, which trades route quality for speed.
 
 **Key findings:**
-1. Haversine expands 3.5x fewer nodes than Dijkstra and always find the shortest route.
+1. Haversine expands 3.5x fewer nodes than Dijkstra and always finds the shortest route.
 2. It is only about 2x faster, not 3.5x, because each estimate costs some trigonometry.
 3. Memory falls by about 3.5x because most memory is the record kept for every explored node.
-4. Inadmissible heuristic lose the guarantee. Mangattan found the shortest route only 8% of the time.
+4. Inadmissible heuristics lose the guarantee. Manhattan found the shortest route only 8% of the time.
 5. Weighted A\* is a tunable trade-off. x1.2 halves the work for routes only 0.3% longer. Beyond x2 there is little further speed gain.
 
 Times depend on the computer used. Node counts, memory and route lengths do not.
@@ -199,12 +199,12 @@ Times depend on the computer used. Node counts, memory and route lengths do not.
 - **Map data quality.** OpenStreetMap data may have some limited inaccuracies such as disconnected edges and nodes on the graph.However, this will not affect the quality of the demonstration of the algorithm. The benchmarks also only used the 14,381 nodes that can all reach each other. 
 - **Distance is the only cost.** The routes found are the shortest, not the quickest or easiest. Hills, surfaces and crossings are not added but were considered as an addition if time allowed.
 - **The map is fixed.** It only covers the Exeter area as downloaded. New paths would need the map file to be regenerated.
-- **The app uses haversine only.** The other heuristics are compared in the benchmarksonly and not in the app itself.
+- **The app uses haversine only.** The other heuristics are compared in the benchmarks only and not in the app itself.
 - **Tested by sampling.** Real-map tests use random samples of routes, not every possible pair of points.
 
 ### Dependencies
 
-Listed in `requirements.txt`:
+Listed with exact versions in `requirements.txt`:
 
 | Package | Used for |
 |---|---|

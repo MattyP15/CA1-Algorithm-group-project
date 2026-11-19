@@ -22,15 +22,10 @@ def load_data(file):
     graph_path = Path(file)
     exeter_graph = osmnx.load_graphml(graph_path)
 
-    print(len(exeter_graph))
-
     for u, v, road_type in MANUAL_CONNECTIONS:
         connect(exeter_graph, u, v, road_type)
 
     exeter_graph = osmnx.truncate.largest_component(exeter_graph, strongly=False)
-
-    print(len(exeter_graph))
-
 
     return exeter_graph
     

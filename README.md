@@ -120,6 +120,7 @@ A*(graph, start, goal, h):
     g[start] <- 0               # Every other node: g = infinity
     frontier <- priority queue containing (h(start, goal), start)
     visited <- empty set
+    parent <- empty map
 
     while frontier is not empty:
         current <- remove the node with the lowest f from frontier

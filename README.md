@@ -31,7 +31,7 @@ This project is a demonstration of the A* Algorithm, intended for an audience of
 
 ## Installation and Running
 
-Requires **Python [3.13]**. Run these commands from the project's root folder.
+Requires Python 3.13. Run these commands from the project's root folder.
 
 **Windows**
 
@@ -145,7 +145,7 @@ With V nodes, E edges, and a binary-heap priority queue:
 
 | | Complexity | Why |
 |---|---|---|
-| **Time (Worst Case)*** | O((V + E) log V) | Each node is expanded at most once. Each edge can add one entry to the heap at O(log V) per operation |
+| **Time (Worst Case)** | O((V + E) log V) | Each node is expanded at most once. Each edge can add one entry to the heap at O(log V) per operation |
 | **Space (Worst Case)** | O(V + E) | g-scores, previous-node records, and the visited set hold up yo V entries. The heap can hold up to E entries |
 
 The worst case is the same as Dijkstra's, which is what A\* becomes when h = 0. In practice, a heuristic is good when fewer nodes are expanded. On our map, haversine A\* expanded 3.5x fewer nodes than Dijkstra on average (see below).
@@ -159,7 +159,7 @@ The worst case is the same as Dijkstra's, which is what A\* becomes when h = 0. 
 | Group | Tests | What is checked |
 |---|---|---|
 | **Hand-made graphs** (`tests/test_toy_graphs.py`) | 16 | Straight line, a cheap Detour beating an expensive direct edge, unreachable goal, start equals goal, one-way streets, parallel edges (the shortest is used), tied routes, statistics recorded. Each test runs with haversine and with h = 0. |
-| **Matches Dijkstra** (`tests/tests_real_map.py`) | 3 | One 100 randome Exeter routes, the route length equals NetworkX's independent Dijkstra implementation and equals the sum of the edges actually used. Haversine never expands more nodes than h = 0. |
+| **Matches Dijkstra** (`tests/test_real_map.py`) | 3 | On 100 random Exeter routes, the route length equals NetworkX's independent Dijkstra implementation and equals the sum of the edges actually used. Haversine never expands more nodes than h = 0. |
 | **Theory Checks** (`tests/test_real_map.py`) | 7 | Haversine never overestimates (adminssible) and is consistent on every edge, weighted A\* never exceeds *w* x the optimal route length (w = 1.2, 1.5, 2, 3), Manhattan distance overestimates somewhere. |
 
 ### Benchmarks: Comparing heuristics
@@ -192,13 +192,11 @@ Times depend on the computer used. Node counts, memory and route lengths do not.
 
 ---
 
-# Limitations, dependencies and third-party resources
+## Limitations, dependencies and third-party resources
 
 ### Limitations
 
-Data for this project was collected from OpenStreetMaps.org and may have some limited inaccuracies such as disconnected edges and nodes on the graph. However, this will not affect the quality of the demonstration of the algorithm in any way.
-
-- **Map data quality.** OpenStreetMap data may have some limited inaccuracies such as disconnected edges and nodes on the graph. In the map tested, roughly 2,300 of the 16,676 nodes could not be reached from the main network. However, this will not affect the quality of the demonstration of the algorithm in any way. The benchmarks also only used the 14,381 nodes that can all reach each other. 
+- **Map data quality.** OpenStreetMap data may have some limited inaccuracies such as disconnected edges and nodes on the graph.However, this will not affect the quality of the demonstration of the algorithm. The benchmarks also only used the 14,381 nodes that can all reach each other. 
 - **Distance is the only cost.** The routes found are the shortest, not the quickest or easiest. Hills, surfaces and crossings are not added but were considered as an addition if time allowed.
 - **The map is fixed.** It only covers the Exeter area as downloaded. New paths would need the map file to be regenerated.
 - **The app uses haversine only.** The other heuristics are compared in the benchmarksonly and not in the app itself.

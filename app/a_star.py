@@ -7,7 +7,7 @@ class AStar:
     def __init__(self, graph, start_node, dest_node, heuristic=haversine_heuristic):
         # Contains all map data.
         self.graph = graph
-        # Heuristic used to find g and h. Haverstine is used when dealing with long/lat coordinates.
+        # Heuristic used to find g and h. Haversine is used when dealing with long/lat coordinates.
         self.heuristic = heuristic
         # Initial node.
         self.start_node = start_node
@@ -42,7 +42,7 @@ class AStar:
 
         # Keep looping until there are no more nodes to explore.
         while frontier:
-            # Get node with the smallest f_score from 
+            # Get node with the smallest f_score from the priority queue.
             _, current = heapq.heappop(frontier)
 
             # Skip already visited nodes.
